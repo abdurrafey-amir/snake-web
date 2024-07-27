@@ -50,7 +50,77 @@ do {
 let gameOver = false;
 let oppositeDirection = null;
 let moveDirection = null;
-render()
+let repeat = window.setInterval(main, interval);
+
+document.addEventListener('keydown', event => {
+    event.preventDefault();
+    let direction = eventKeysToDirection[event.key] || moveDirection;
+    moveDirection = direction === oppositeDirection ? moveDirection : direction;
+});
+
+function main() {
+    moveSnake();
+    checkBounds();
+    gameOver = checkPassThrough(snakeCoords.H);
+
+    render();
+    if (gameOver) {
+        clearInterval(repeat);
+    }
+}
+
+function moveSnake() {
+    if (moveDirection === null) {
+        return;
+    }
+    snakeCoords.B.unshift({x: snakeCoords.H.x, y: snakeCoords.H.y});
+    if (moveDirection === 'up') {
+        snakeCoords.H.y -= pixelsPerBlock;
+    } else if (moveDirection === 'down') {
+        snakeCoords.H.y += pixelsPerBlock;
+    } else if (moveDirection === 'right') {
+        snakeCoords.H.x += pixelsPerBlock;
+    } else {
+        snakeCoords.H.x -= pixelsPerBlock;
+    }
+    snakeCoords.B.pop();
+    if (snakeCoords.B.length > 0) {
+        oppositeDirection = oppositeDirections[moveDirection];
+    }
+}
+
+function checkBounds() {
+    if (snakeCoords.H.x < 0 || snakeCoords.H.x > snakeCanvas.width - pixelsPerBlock || snakeCoords.H.y < 0 || snakeCoords.H.y > snakeCanvas.height - pixelsPerBlock) {
+        gameOver = true;
+    }
+}
+
+function checkPassThrough(obj) {
+    if (!gameOver) {
+        return(snakeCoords.B.findIndex(item => {
+            return obj.x === item.x && obj.y === item.y;
+        }) !== -1
+    );
+    } else {
+        return gameOver;
+    }
+}
+
+function checkFood() {
+    if (snakeCoords.H.x === snakeCoords.F.x && snakeCoords.H.y === snakeCoords.F.y && !gameOver) {
+        do {
+            snakeCoords.F = {
+                x: Math.floor(Math.random() * blocksX) * pixelsPerBlock,
+                y: Math.floor(Math.random() * blocksY) * pixelsPerBlock,
+            };
+        } while ((snakeCoords.F.x === snakeCoords.H.x && snakeCoords.F.y === snakeCoords.H.y) || checkPassThrough(snakeCoords.F));
+        for (let i = 0; i < 3; i++) {
+            snakeCoords.B.push(0);
+        }
+        score++;
+        length += 3;
+    }
+}
 
 function render() {
     if (!gameOver) {
