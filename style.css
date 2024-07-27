@@ -1,7 +1,10 @@
 :root {
-    --beige: #f5f0dc;
+    --beige: #F6683B;
 }
 
+body {
+    background-color: #142F44;
+}
 #retry {
     display: none;
     background-color: #4CAF50;
@@ -21,7 +24,7 @@
     border-radius: 20px;
     padding: 30px;
     padding-top: 0;
-    margin-top: 10px;
+    margin-top: 40px;
 }
 /* Remove bootstrap padding */
 .snake-canvas {
