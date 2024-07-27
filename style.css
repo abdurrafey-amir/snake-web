@@ -1,7 +1,3 @@
-:root {
-    --beige: #F6683B;
-}
-
 body {
     background-color: #142F44;
 }
@@ -20,7 +16,7 @@ body {
   }
 
 .snake-container {
-    background-color: var(--beige);
+    background-color: #F6683B;
     border-radius: 20px;
     padding: 30px;
     padding-top: 0;
