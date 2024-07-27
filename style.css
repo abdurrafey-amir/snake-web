@@ -2,6 +2,19 @@
     --beige: #f5f0dc;
 }
 
+#retry {
+    display: none;
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#retry:hover {
+    background-color: #3e8e41;
+  }
 
 .snake-container {
     background-color: var(--beige);

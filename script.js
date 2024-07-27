@@ -3,6 +3,10 @@ let snakeCanvas = document.getElementById('snake-canvas');
 
 let scoreDisplay = document.getElementById('score');
 let lengthDisplay = document.getElementById('length');
+let eat = new Audio('eat.wav');
+let crash = new Audio('crash.wav');
+let retry = document.getElementById('retry');
+
 
 snakeCanvas.width = snakeContainer.offsetWidth - 60;
 snakeCanvas.height = snakeCanvas.width / 2.5;
@@ -62,10 +66,13 @@ function main() {
     moveSnake();
     checkBounds();
     gameOver = checkPassThrough(snakeCoords.H);
-
+    
+    checkFood();
     render();
     if (gameOver) {
+        crash.play();
         clearInterval(repeat);
+        retry.style.display = 'block';
     }
 }
 
@@ -91,6 +98,7 @@ function moveSnake() {
 
 function checkBounds() {
     if (snakeCoords.H.x < 0 || snakeCoords.H.x > snakeCanvas.width - pixelsPerBlock || snakeCoords.H.y < 0 || snakeCoords.H.y > snakeCanvas.height - pixelsPerBlock) {
+        // crash.play();
         gameOver = true;
     }
 }
@@ -117,6 +125,7 @@ function checkFood() {
         for (let i = 0; i < 3; i++) {
             snakeCoords.B.push(0);
         }
+        eat.play();
         score++;
         length += 3;
     }
@@ -128,15 +137,39 @@ function render() {
         let ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.strokeStyle = 'black';
-        ctx.fillStyle = 'red';
+        ctx.fillStyle = 'green';
         ctx.fillRect(snakeCoords.H.x, snakeCoords.H.y, pixelsPerBlock, pixelsPerBlock);
         ctx.fillStyle = 'black';
         for (let obj of snakeCoords.B) {
             ctx.fillRect(obj.x, obj.y, pixelsPerBlock, pixelsPerBlock);
         }
-        ctx.fillStyle = 'green';
+        ctx.fillStyle = 'red';
         ctx.fillRect(snakeCoords.F.x, snakeCoords.F.y, pixelsPerBlock, pixelsPerBlock);
         scoreDisplay.innerHTML = `Score: ${score}`;
         lengthDisplay.innerHTML = `Length: ${length}`;
     }
 }
+
+
+retry.addEventListener('click', () => {
+    score = 0;
+    length = 1;
+    snakeCoords = {
+        H: {x: centerX, y: centerY},
+        B: [],
+        F: {},
+    };
+    gameOver = false;
+    oppositeDirection = null;
+    moveDirection = null;
+
+    repeat = window.setInterval(main, interval);
+    retry.style.display = 'none';
+
+    do {
+        snakeCoords.F = {
+            x: Math.floor(Math.random() * blocksX) * pixelsPerBlock,
+            y: Math.floor(Math.random() * blocksY) * pixelsPerBlock,
+        };
+    } while (snakeCoords.F.x === centerX && snakeCoords.F.y === centerY);
+});
